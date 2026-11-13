@@ -124,6 +124,20 @@ Unblocked Games 55
 
   <!-- Top Utility Buttons -->
   <div class="toolbar">
+    <select id="lang-select" onchange="changeLanguage(this.value)" style="background: var(--card-bg); color: var(--text); border: 1px solid var(--border); padding: 10px; border-radius: 6px; font-family: inherit; cursor: pointer;">
+      <option value="en">🌐 English</option>
+      <option value="es">🇪🇸 Español</option>
+      <option value="fr">🇫🇷 Français</option>
+    </select>
+
+    <button id="btn-bg" onclick="document.getElementById('bg-upload').click()">🖼 Change Background</button>
+    <input type="file" id="bg-upload" accept="image/*" style="display: none;" onchange="uploadBg(event)">
+    <button id="btn-reset" onclick="resetBg()">✕ Reset Background</button>
+    <button id="btn-cloak" onclick="cloakSite()">🔒 Cloak Site</button>
+    <button id="btn-random" onclick="randomGame()">🎲 Random Game</button>
+  </div>
+
+  <div class="toolbar">
     <button onclick="document.getElementById('bg-upload').click()">🖼 Change Background</button>
     <input type="file" id="bg-upload" accept="image/*" style="display: none;" onchange="uploadBg(event)">
     <button onclick="resetBg()">✕ Reset Background</button>
