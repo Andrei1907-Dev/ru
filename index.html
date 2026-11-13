@@ -1,0 +1,264 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Home | Compass</title>
+  <style>
+    :root {
+      --bg-color: #0d1117;
+      --card-bg: #161b22;
+      --border: #30363d;
+      --text: #c9d1d9;
+      --accent: #58a6ff;
+    }
+    body {
+      background-color: var(--bg-color);
+      background-size: cover;
+      background-position: center;
+      background-attachment: fixed;
+      color: var(--text);
+      font-family: 'Courier New', Courier, monospace;
+      margin: 0;
+      padding: 20px;
+      text-align: center;
+    }
+    .container {
+      max-width: 1000px;
+      margin: 0 auto;
+      background: rgba(13, 17, 23, 0.92);
+      padding: 25px;
+      border-radius: 12px;
+      border: 1px solid var(--border);
+    }
+    pre.ascii {
+      color: var(--accent);
+      font-size: 11px;
+      line-height: 1.1;
+      overflow-x: auto;
+      margin-bottom: 20px;
+    }
+    .toolbar {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 10px;
+      margin-bottom: 20px;
+    }
+    button, input {
+      background: var(--card-bg);
+      color: var(--text);
+      border: 1px solid var(--border);
+      padding: 10px 15px;
+      border-radius: 6px;
+      font-family: inherit;
+      font-size: 14px;
+    }
+    button {
+      cursor: pointer;
+      transition: 0.2s;
+    }
+    button:hover, button.active {
+      background: #21262d;
+      border-color: var(--accent);
+      color: #fff;
+    }
+    input {
+      width: 220px;
+    }
+    .game-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+      gap: 15px;
+      margin-top: 20px;
+    }
+    .empty-msg {
+      grid-column: 1 / -1;
+      padding: 40px;
+      color: #8b949e;
+      border: 1px dashed var(--border);
+      border-radius: 8px;
+    }
+    .game-card {
+      background: var(--card-bg);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 15px;
+      cursor: pointer;
+      transition: transform 0.15s, border-color 0.15s;
+    }
+    .game-card:hover {
+      transform: translateY(-3px);
+      border-color: var(--accent);
+    }
+    .game-card h3 {
+      margin: 0 0 8px 0;
+      font-size: 16px;
+      color: #fff;
+    }
+    .game-card span {
+      font-size: 12px;
+      background: #21262d;
+      padding: 3px 8px;
+      border-radius: 4px;
+    }
+    #player-box {
+      display: none;
+      margin-top: 20px;
+    }
+    iframe {
+      width: 100%;
+      height: 550px;
+      border: 2px solid var(--border);
+      border-radius: 8px;
+      background: #000;
+    }
+  </style>
+</head>
+<body>
+
+<div class="container">
+<pre class="ascii">
+   ____                         ____            _        _ 
+  / ___| __ _ _ __ ___   ___   |  _ \ ___  _ __| |_ __ _| |
+
+ | |  _ / _` | '_ ` _ \ / _ \  | |_) / _ \| '__| __/ _` | |
+ | |_| | (_| | | | | | |  __/  |  __/ (_) | |  | || (_| | |
+  \____|\__,_|_| |_| |_|\___|  |_|   \___/|_|   \__\__,_|_|
+</pre>
+
+  <!-- Top Utility Buttons -->
+  <div class="toolbar">
+    <button onclick="changeBg()">🖼 Change Background</button>
+    <button onclick="resetBg()">✕ Reset Background</button>
+    <button onclick="cloakSite()">🔒 Cloak Site</button>
+    <button onclick="randomGame()">🎲 Random Game</button>
+  </div>
+
+  <!-- Search & Genre Filters -->
+  <div class="toolbar">
+    <input type="text" id="search" placeholder="🔍 Search games..." onkeyup="filterGames()">
+    <button class="genre-btn active" onclick="setGenre('all', this)">🎯 All</button>
+    <button class="genre-btn" onclick="setGenre('arcade', this)">👾 Arcade</button>
+    <button class="genre-btn" onclick="setGenre('puzzle', this)">🧩 Puzzle</button>
+    <button class="genre-btn" onclick="setGenre('action', this)">💥 Action</button>
+  </div>
+
+  <!-- Game Player Frame -->
+  <div id="player-box">
+    <div style="display:flex; justify-content:space-between; margin-bottom:10px;">
+      <strong id="current-title">Playing Game</strong>
+      <div>
+        <button onclick="fullscreenGame()">⛶ Fullscreen</button>
+        <button onclick="closeGame()">✖ Close Game</button>
+      </div>
+    </div>
+    <iframe id="game-frame" src="" allowfullscreen></iframe>
+  </div>
+
+  <!-- Game Cards Grid -->
+  <div class="game-grid" id="game-grid"></div>
+</div>
+
+<script>
+  // Empty game list - add your games inside the brackets later
+  const games = [];
+
+  let currentGenre = 'all';
+
+  function renderGames() {
+    const grid = document.getElementById('game-grid');
+    const query = document.getElementById('search').value.toLowerCase();
+    grid.innerHTML = '';
+
+    if (games.length === 0) {
+      grid.innerHTML = '<div class="empty-msg">No games added yet.</div>';
+      return;
+    }
+
+    games.forEach(game => {
+      const matchesGenre = currentGenre === 'all' || game.genre === currentGenre;
+      const matchesSearch = game.title.toLowerCase().includes(query);
+
+      if (matchesGenre && matchesSearch) {
+        const card = document.createElement('div');
+        card.className = 'game-card';
+        card.innerHTML = `<h3>${game.title}</h3><span>${game.genre.toUpperCase()}</span>`;
+        card.onclick = () => launchGame(game);
+        grid.appendChild(card);
+      }
+    });
+  }
+
+  function setGenre(genre, btn) {
+    currentGenre = genre;
+    document.querySelectorAll('.genre-btn').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    renderGames();
+  }
+
+  function filterGames() {
+    renderGames();
+  }
+
+  function launchGame(game) {
+    document.getElementById('current-title').innerText = "Playing: " + game.title;
+    document.getElementById('game-frame').src = game.url;
+    document.getElementById('player-box').style.display = 'block';
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }
+
+  function closeGame() {
+    document.getElementById('game-frame').src = '';
+    document.getElementById('player-box').style.display = 'none';
+  }
+
+  function fullscreenGame() {
+    const iframe = document.getElementById('game-frame');
+    if (iframe.requestFullscreen) iframe.requestFullscreen();
+  }
+
+  function randomGame() {
+    if (games.length === 0) return alert("No games added yet!");
+    const pick = games[Math.floor(Math.random() * games.length)];
+    launchGame(pick);
+  }
+
+  function changeBg() {
+    const url = prompt("Paste an image URL for your background:");
+    if (url) {
+      document.body.style.backgroundImage = `url('${url}')`;
+      localStorage.setItem('customBg', url);
+    }
+  }
+
+  function resetBg() {
+    document.body.style.backgroundImage = 'none';
+    localStorage.removeItem('customBg');
+  }
+
+  function cloakSite() {
+    const win = window.open();
+    if (!win) return alert("Please allow popups to use the tab cloaker!");
+    const iframe = win.document.createElement('iframe');
+    iframe.style.width = "100%";
+    iframe.style.height = "100%";
+    iframe.style.border = "none";
+    iframe.style.position = "fixed";
+    iframe.style.top = "0";
+    iframe.style.left = "0";
+    iframe.src = window.location.href;
+    win.document.title = "Home | Compass";
+    win.document.body.style.margin = "0";
+    win.document.body.appendChild(iframe);
+    window.location.replace("https://google.com");
+  }
+
+  const savedBg = localStorage.getItem('customBg');
+  if (savedBg) document.body.style.backgroundImage = `url('${savedBg}')`;
+
+  renderGames();
+</script>
+
+</body>
+</html>
