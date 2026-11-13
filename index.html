@@ -129,6 +129,99 @@ Unblocked Games 55
       <option value="es">🇪🇸 Español</option>
       <option value="fr">🇫🇷 Français</option>
     </select>
+    <!DOCTYPE html>
+<html>
+<head>
+  <title>Home Page</title>
+  <style>
+    body {
+      margin: 0;
+      height: 100vh;
+      /* Default home page background color or image */
+      background-color: #121212;
+      background-size: cover;
+      background-position: center;
+      background-repeat: no-repeat;
+      transition: background 0.3s ease;
+    }
+
+    .controls {
+      padding: 15px;
+      background: rgba(0, 0, 0, 0.7);
+      display: inline-block;
+      border-bottom-right-radius: 8px;
+      color: white;
+      font-family: sans-serif;
+    }
+
+    button, input[type="file"] {
+      padding: 8px 12px;
+      margin: 4px;
+      cursor: pointer;
+    }
+
+    .delete-btn {
+      background-color: #d9534f;
+      color: white;
+      border: none;
+      border-radius: 4px;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="controls">
+    <!-- Option 1: Pick from your GitHub folder -->
+    <button onclick="setFolderBg('backgrounds/bg1.jpg')">BG 1</button>
+    <button onclick="setFolderBg('backgrounds/bg2.jpg')">BG 2</button>
+    
+    <!-- Option 2: Upload a file from device -->
+    <input type="file" id="bgUpload" accept="image/*" onchange="uploadBg(event)">
+    
+    <!-- Option 3: Delete / Reset background -->
+    <button class="delete-btn" onclick="deleteBg()">Delete Background</button>
+  </div>
+
+  <script>
+    // 1. Set background using a file in your GitHub folder
+    function setFolderBg(imagePath) {
+      document.body.style.backgroundImage = `url('${imagePath}')`;
+      localStorage.setItem("homeBg", imagePath);
+    }
+
+    // 2. Set background using an uploaded file from user's device
+    function uploadBg(event) {
+      const file = event.target.files[0];
+      if (!file) return;
+
+      const reader = new FileReader();
+      reader.onload = function(e) {
+        const imageData = e.target.result;
+        document.body.style.backgroundImage = `url('${imageData}')`;
+        localStorage.setItem("homeBg", imageData);
+      };
+      reader.readAsDataURL(file);
+    }
+
+    // 3. Delete saved background and reset to default
+    function deleteBg() {
+      document.body.style.backgroundImage = "none";
+      localStorage.removeItem("homeBg");
+      document.getElementById("bgUpload").value = ""; // Clears the file input
+    }
+
+    // Load saved background automatically on home page load
+    window.addEventListener("DOMContentLoaded", function() {
+      const saved = localStorage.getItem("homeBg");
+      if (saved) {
+        document.body.style.backgroundImage = `url('${saved}')`;
+      }
+    });
+  </script>
+
+</body>
+</html>
+
 
   <!-- Search & Genre Filters -->
   <div class="toolbar">
