@@ -130,11 +130,16 @@ Unblocked Games 55
       <option value="fr">🇫🇷 Français</option>
     </select>
 
+  <!-- Search & Genre Filters -->
   <div class="toolbar">
-    <button onclick="document.getElementById('bg-upload').click()">🖼 Change Background</button>
-    <input type="file" id="bg-upload" accept="image/*" style="display: none;" onchange="uploadBg(event)">
-    <button onclick="resetBg()">✕ Reset Background</button>
-    <button onclick="cloakSite()">🔒 Cloak Site</button>
+    <div class="search-wrapper">
+      <input type="text" id="search" placeholder="🔍 Search games..." oninput="handleSearch()">
+      <button id="clear-search" onclick="clearSearch()" title="Clear search">✕</button>
+    </div>
+    <button class="genre-btn active" onclick="setGenre('all', this)">🎯 All</button>
+    <button class="genre-btn" onclick="setGenre('arcade', this)">👾 Arcade</button>
+    <button class="genre-btn" onclick="setGenre('puzzle', this)">🧩 Puzzle</button>
+    <button class="genre-btn" onclick="setGenre('action', this)">💥 Action</button>
   </div>
 
   <!-- Game Player Frame -->
