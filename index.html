@@ -129,11 +129,13 @@
 
   <!-- Top Utility Buttons -->
   <div class="toolbar">
-    <button onclick="changeBg()">🖼 Change Background</button>
+    <button onclick="document.getElementById('bg-upload').click()">🖼 Change Background</button>
+    <input type="file" id="bg-upload" accept="image/*" style="display: none;" onchange="uploadBg(event)">
     <button onclick="resetBg()">✕ Reset Background</button>
     <button onclick="cloakSite()">🔒 Cloak Site</button>
     <button onclick="randomGame()">🎲 Random Game</button>
   </div>
+
 
   <!-- Search & Genre Filters -->
   <div class="toolbar">
@@ -224,13 +226,23 @@
     launchGame(pick);
   }
 
-  function changeBg() {
-    const url = prompt("Paste an image URL for your background:");
-    if (url) {
-      document.body.style.backgroundImage = `url('${url}')`;
-      localStorage.setItem('customBg', url);
-    }
+  function uploadBg(event) {
+    const file = event.target.files[0];
+    if (!file) return;
+
+    const reader = new FileReader();
+    reader.onload = function(e) {
+      const imageData = e.target.result;
+      document.body.style.backgroundImage = `url('${imageData}')`;
+      try {
+        localStorage.setItem('customBg', imageData);
+      } catch (err) {
+        alert("Image applied, but it is too large to stay saved after refreshing!");
+      }
+    };
+    reader.readAsDataURL(file);
   }
+
 
   function resetBg() {
     document.body.style.backgroundImage = 'none';
